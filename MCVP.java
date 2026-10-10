@@ -61,6 +61,7 @@ public class MCVP {
         };
 
         char[] Answers = {'A','B','C','B','B','C','A','B','C','B'};
+        boolean[][] wrong1 = new boolean[no][Questions.length];
 
         while(true){
             try{
@@ -71,11 +72,11 @@ public class MCVP {
                         System.out.println(options[i][j]);
                     }
 
-                    for(int k=1; k<=no; k++){
+                    for(int k=0; k<no; k++){
 
                         while(true){
                             try{
-                                System.out.print("Student "+names[k-1]+": ");
+                                System.out.print("Student "+names[k]+": ");
                                 char ans = sc.next().toUpperCase().charAt(0);
 
                                 if(ans!='A' && ans!='B' && ans!='C' && ans!='D'){
@@ -83,7 +84,9 @@ public class MCVP {
                                 }
 
                                 if(ans == Answers[i]){
-                                    score[k-1]++;
+                                    score[k]++;
+                                }else if(ans !=Answers[i]){
+                                    wrong1[k][i]=true;
                                 }
                                 break;
                             }catch(Exception e){
@@ -125,24 +128,27 @@ public class MCVP {
             "byte",
             "oracle"
         };
+
+        boolean[][] wrong2 = new boolean[no][fillQuestions.length];
         
          for(int i=0;i<fillQuestions.length;i++){
             System.out.println("\n"+fillQuestions[i]);
-            for(int k=1; k<=no;k++){
-            System.out.print("Student "+names[k-1]+": ");
-                String ans = sc.nextLine().toLowerCase();
-    
+            for(int k=0; k<no; k++){
+                System.out.print("Student "+names[k]+": ");
+                String ans = sc.nextLine().toLowerCase().trim();
+
                 if(ans.equals(fillAnswers[i])){
-                    score[k-1]++;
+                    score[k]++;
+                }else{
+                    wrong2[k][i] = true;
                 }
             }
-             
         }
 
         for(int i=0; i<score.length-1; i++){
             for(int j=0; j<score.length-i-1; j++){
                 if(score[j] < score[j+1]){
-    
+
                     int tempScore = score[j];
                     score[j] = score[j+1];
                     score[j+1] = tempScore;
@@ -150,14 +156,55 @@ public class MCVP {
                     String tempName = names[j];
                     names[j] = names[j+1];
                     names[j+1] = tempName;
+
+                    
+                    boolean[] tempWrong1 = wrong1[j];
+                    wrong1[j] = wrong1[j+1];
+                    wrong1[j+1] = tempWrong1;
+
+                    
+                    boolean[] tempWrong2 = wrong2[j];
+                    wrong2[j] = wrong2[j+1];
+                    wrong2[j+1] = tempWrong2;
                 }
             }
         }
 
-        System.out.println("============ QUIZ RESULT =============");
+        System.out.println("\n============ QUIZ RESULT =============");
         for(int i=0;i<score.length;i++){
             double percentage = ((double)score[i] / 20) * 100;
             System.out.printf("Student %s Score: %d/20 Percentage: %.2f%%\n", names[i], score[i], percentage);
+        }
+
+       System.out.println("\n=========== STUDENT REPORT ===========");
+
+       for(int i = 0; i < no; i++){
+
+            System.out.println("\nStudent: " + names[i]);
+            System.out.println("Score: " + score[i] + "/20");
+            System.out.println("Wrong Questions:");
+
+            boolean perfect = true;
+
+            
+            for(int j = 0; j < Questions.length; j++){
+                if(wrong1[i][j]){
+                    System.out.println("Q" + (j+1) + " - Correct: " + Answers[j]);
+                    perfect = false;
+                }
+            }
+
+            
+            for(int j = 0; j < fillQuestions.length; j++){
+                if(wrong2[i][j]){
+                    System.out.println("Q" + (j+11) + " - Correct: " + fillAnswers[j]);
+                    perfect = false;
+                }
+            }
+
+            if(perfect){
+                System.out.println("None (Perfect Score!)");
+            }
         }
     }
 }
